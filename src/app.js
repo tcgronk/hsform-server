@@ -1,11 +1,15 @@
 require('dotenv').config()
 const express = require('express')
 const Hubspot = require('hubspot')
-var cors = require('cors')
+const cors = require('cors')
+const helmet = require("helmet");
 const jsonParser = express.json();
 const app = express()
 
 app.use(cors())
+app.use(helmet());
+app.use(express.json());
+
 
 app.get('/', (request, response,next) => {
     let apiKey='c4861f90-7f85-4f56-9330-183e75299607';
