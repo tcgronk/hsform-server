@@ -14,7 +14,7 @@ app.use(express.json());
 
 
 app.post("/",  jsonParser,(req,res,next)=>{
-    let {firstname,lastname,company, email, phone}=req.body;
+    let {firstname,lastname,email, phone,company}=req.body;
     let newContact = {"properties":[
             { "property": "firstname","value": firstname },
             { "property": "lastname","value": lastname },
@@ -27,9 +27,7 @@ app.post("/",  jsonParser,(req,res,next)=>{
     hubspot.contacts.create(newContact)
     .then(newContact =>{
         console.log(newContact)
-        return res.json({
-            error: 'Information added to our database!',
-          });
+        res.send('User is added')
     }).catch(next)
 })
 
