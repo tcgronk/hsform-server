@@ -1,9 +1,8 @@
 require('dotenv').config()
 const express = require('express')
-const Hubspot = require('hubspot')
+const hubspot = require('@hubspot/api-client')
 const cors = require('cors')
 const helmet = require("helmet");
-const jsonParser = express.json();
 const app = express()
 const { api_key } = require("./config");
 
@@ -11,24 +10,25 @@ app.use(cors())
 app.use(helmet());
 app.use(express.json());
 
+const logResponse = (data) => {
+    console.log('Response from API', JSON.stringify(data, null, 1))
+}
 
+app.get('/', async (req, res) => {
+    res.redirect('/contacts')
+})
+app.post("/", async(req,res)=>{
+    try{
 
-app.post("/",  jsonParser,(req,res,next)=>{
-    let {firstname,lastname,email, phone,company}=req.body;
-    let newContact = {"properties":[
-            { "property": "firstname","value": firstname },
-            { "property": "lastname","value": lastname },
-            { "property": "email", "value": email},
-            { "property": "phone", "value": phone },
-            { "property": "company", "value": company }
-    ]
+    let properties = req.body
+    
+    const hubspotClient = new hubspot.Client({ apiKey: api_key });
+    const createResponse = await hubspotClient.crm.contacts.basicApi.create({properties})
+    logResponse(createResponse)
+    res.send(res.json())
+    } catch(e){
+        console.log("error")
     }
-    const hubspot = new Hubspot({ apiKey: api_key });
-    hubspot.contacts.create(newContact)
-    .then(newContact =>{
-        console.log(newContact)
-        res.send('User is added')
-    }).catch(next)
 })
 
 
